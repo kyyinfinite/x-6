@@ -12,6 +12,28 @@ export function hasAdminKey(): boolean {
   return Boolean(getAdminKey());
 }
 
+export function isAdminVerified(): boolean {
+  return Boolean(getAdminKey()) && localStorage.getItem("portalx6_admin_verified") === "1";
+}
+
+export async function verifyAdminKey(key: string): Promise<boolean> {
+  const res = await fetch(`${API_URL}/api/health`, {
+    method: "POST",
+    headers: { "x-api-key": key },
+  });
+  const ok = res.ok;
+  if (ok) {
+    localStorage.setItem("portalx6_admin_key", key);
+    localStorage.setItem("portalx6_admin_verified", "1");
+  }
+  return ok;
+}
+
+export function clearAdminKey() {
+  localStorage.removeItem("portalx6_admin_key");
+  localStorage.removeItem("portalx6_admin_verified");
+}
+
 async function handleResponse<T>(res: Response): Promise<T> {
   const json = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(json.error || `Request gagal (${res.status})`);

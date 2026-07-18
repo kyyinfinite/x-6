@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { BrowserRouter, Routes, Route, NavLink, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, NavLink, Link, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   Users,
@@ -14,6 +14,7 @@ import {
   ChevronRight,
   GraduationCap,
   BookOpen,
+  ShieldCheck,
 } from "lucide-react";
 
 import Dashboard from "./pages/Dashboard";
@@ -23,6 +24,7 @@ import Kehadiran from "./pages/Kehadiran";
 import Jadwal from "./pages/Jadwal";
 import Nilai from "./pages/Nilai";
 import Struktur from "./pages/Struktur";
+import Admin from "./pages/Admin";
 
 // ── Nav items config ──────────────────────────────────────────
 const NAV_ITEMS = [
@@ -44,6 +46,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/jadwal": "Jadwal",
   "/nilai": "Rekap Nilai",
   "/struktur": "Struktur Kelas",
+  "/admin": "Admin Panel",
 };
 
 function Topbar({ onMenuClick }: { onMenuClick: () => void }) {
@@ -185,7 +188,12 @@ function Sidebar({ open, onClose }: { open: boolean; onClose: () => void }) {
         </nav>
 
         {/* Footer */}
-        <div className="p-3 border-t border-white/5">
+        <div className="p-3 border-t border-white/5 space-y-2">
+          <Link to="/admin" onClick={onClose}
+            className="flex items-center gap-2.5 glass rounded-xl p-3 text-slate-400 hover:text-white transition-colors">
+            <div className="p-1.5 rounded-lg bg-blue-500/10 text-blue-400"><ShieldCheck size={14} /></div>
+            <p className="text-xs font-semibold">Admin Panel</p>
+          </Link>
           <div className="glass rounded-xl p-3 flex items-center gap-2.5">
             <div className="p-2 rounded-lg bg-blue-500/10 text-blue-400">
               <BookOpen size={14} />
@@ -222,6 +230,7 @@ function Layout() {
             <Route path="/jadwal" element={<Jadwal />} />
             <Route path="/nilai" element={<Nilai />} />
             <Route path="/struktur" element={<Struktur />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
         </div>
       </main>
