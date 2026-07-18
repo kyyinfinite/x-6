@@ -20,7 +20,7 @@ const belumLunasSiswa = [
 
 export default function Keuangan() {
   const [activeTab, setActiveTab] = useState<"riwayat" | "iuran">("riwayat");
-  const { data, error } = usePolling(() => apiGet<KasSummary>("/api/kas/summary"), 8000);
+  const { data, error } = usePolling(() => apiGet<KasSummary>("/api/kas?view=summary"), 8000);
 
   const kasData = data ?? { ...kasDataDummy, arusBulanan: [] as KasSummary["arusBulanan"] };
   const bulanData = data?.arusBulanan?.length ? data.arusBulanan : [

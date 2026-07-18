@@ -56,9 +56,23 @@ Setelah itu satu URL (misal `https://portal-x6.vercel.app`) sudah melayani front
 
 ## Endpoint yang tersedia
 
-Sama seperti sebelumnya (lihat kode di `api/`): `/api/dashboard`, `/api/students`, `/api/attendance/*`, `/api/kas/*`, `/api/schedule*`, `/api/announcements`, `/api/agenda`, `/api/grades`, `/api/class-info`, `/api/org-structure`, `/api/health`.
+Beberapa endpoint digabung jadi satu function dengan query param, karena Vercel plan Hobby (gratis) membatasi **maksimal 12 serverless functions per deployment**. Project ini sekarang punya 11 function:
+
+- `/api/health`
+- `/api/dashboard`
+- `/api/students` — list/create; `?id=` untuk get/update/delete satu siswa
+- `/api/attendance` — raw list/manual input; `?view=today` untuk rekap harian, `?view=monthly` untuk tren 6 bulan
+- `/api/kas` — raw list/manual input; `?view=summary` untuk saldo+riwayat+arus kas
+- `/api/schedule` — jadwal pelajaran; `?type=piket` untuk jadwal piket
+- `/api/announcements`
+- `/api/agenda`
+- `/api/grades`
+- `/api/class-info`
+- `/api/org-structure`
 
 Endpoint tulis (POST/PUT/DELETE) butuh header `x-api-key: <ADMIN_API_KEY>`.
+
+Kalau nanti nambah endpoint baru dan kena limit 12 lagi, gabungkan dengan pola yang sama (satu file, cabang berdasarkan `req.query` atau `req.method`) daripada bikin file/folder baru di `api/`.
 
 ## Kenapa digabung begini
 

@@ -26,8 +26,8 @@ export default function Kehadiran() {
   const [saving, setSaving] = useState(false);
 
   const { data: liveSiswa } = usePolling(() => apiGet<Siswa[]>("/api/students"), 15000);
-  const { data: liveKehadiran } = usePolling(() => apiGet<typeof kehadiranHariIniDummy>("/api/attendance/today"), 8000);
-  const { data: liveBulanan } = usePolling(() => apiGet<typeof kehadiranBulananDummy>("/api/attendance/monthly"), 30000);
+  const { data: liveKehadiran } = usePolling(() => apiGet<typeof kehadiranHariIniDummy>("/api/attendance?view=today"), 8000);
+  const { data: liveBulanan } = usePolling(() => apiGet<typeof kehadiranBulananDummy>("/api/attendance?view=monthly"), 30000);
 
   const siswaList = liveSiswa && liveSiswa.length > 0 ? liveSiswa : siswaListDummy;
   const kehadiranHariIni = liveKehadiran ?? kehadiranHariIniDummy;

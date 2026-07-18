@@ -60,7 +60,7 @@ export default function Jadwal() {
     30000
   );
   const { data: livePiket, error: piketError } = usePolling(
-    () => apiGet<typeof jadwalPiketDummy>("/api/schedule/piket"),
+    () => apiGet<typeof jadwalPiketDummy>("/api/schedule?type=piket"),
     30000
   );
 
