@@ -4,9 +4,9 @@ import {
 } from "lucide-react";
 import { apiGet, apiPost, apiPut, apiDelete, isAdminVerified, verifyAdminKey, clearAdminKey } from "../lib/api";
 
-const inputCls = "w-full bg-white/5 border border-white/8 rounded-xl px-3 py-2 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-blue-500/50 transition-all";
-const btnPrimary = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-blue-600 hover:bg-blue-500 text-white transition-all disabled:opacity-50";
-const btnDanger = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 transition-all";
+const inputCls = "w-full bg-black/[0.05] border border-ink/15 rounded-xl px-3 py-2 text-sm text-ink placeholder-ink focus:outline-none focus:border-sage/50 transition-all";
+const btnPrimary = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-sage hover:bg-sage text-ink transition-all disabled:opacity-50";
+const btnDanger = "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-red-500/10 hover:bg-red-500/20 text-red-600 border border-red-500/20 transition-all";
 
 type ClassInfo = { nama: string; tahunAjaran: string; waliKelas: string; waliFoto: string; ruangan: string; jurusan: string; motto: string };
 type JadwalItem = { jam: string; mapel: string; guru: string; ruang: string };
@@ -42,11 +42,11 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
 
   return (
     <div className="min-h-[70vh] flex items-center justify-center p-6">
-      <form onSubmit={handleSubmit} className="glass rounded-2xl p-8 border border-white/5 w-full max-w-sm">
+      <form onSubmit={handleSubmit} className="glass rounded-2xl p-8 border border-ink/10 w-full max-w-sm">
         <div className="flex flex-col items-center mb-6">
-          <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-400 mb-3"><ShieldCheck size={28} /></div>
-          <h1 className="text-lg font-black text-white">Admin Portal X-6</h1>
-          <p className="text-xs text-slate-500 mt-1 text-center">Masukkan admin API key untuk mengelola data website</p>
+          <div className="p-3 rounded-2xl bg-sage/10 text-sage mb-3"><ShieldCheck size={28} /></div>
+          <h1 className="text-lg font-black text-ink">Admin Portal X-6</h1>
+          <p className="text-xs text-ink-faint mt-1 text-center">Masukkan admin API key untuk mengelola data website</p>
         </div>
         <input
           type="password"
@@ -56,7 +56,7 @@ function LoginForm({ onSuccess }: { onSuccess: () => void }) {
           className={inputCls}
           autoFocus
         />
-        {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
+        {error && <p className="text-xs text-red-600 mt-2">{error}</p>}
         <button type="submit" disabled={loading || !key} className={`${btnPrimary} w-full justify-center mt-4`}>
           {loading ? "Memeriksa..." : "Masuk"}
         </button>
@@ -86,7 +86,7 @@ function InfoKelasTab() {
     setTimeout(() => setStatus(""), 2500);
   };
 
-  if (!loaded) return <p className="text-xs text-slate-600">Memuat...</p>;
+  if (!loaded) return <p className="text-xs text-ink-faint">Memuat...</p>;
 
   const fields: { key: keyof ClassInfo; label: string }[] = [
     { key: "nama", label: "Nama Kelas" },
@@ -102,13 +102,13 @@ function InfoKelasTab() {
     <div className="space-y-4">
       {fields.map((f) => (
         <div key={f.key}>
-          <label className="text-xs text-slate-400 mb-1 block">{f.label}</label>
+          <label className="text-xs text-ink-soft mb-1 block">{f.label}</label>
           <input className={inputCls} value={form[f.key]} onChange={(e) => setForm({ ...form, [f.key]: e.target.value })} />
         </div>
       ))}
       <div className="flex items-center gap-3">
         <button onClick={save} className={btnPrimary}><Save size={14} />Simpan</button>
-        {status && <span className="text-xs text-slate-400">{status}</span>}
+        {status && <span className="text-xs text-ink-soft">{status}</span>}
       </div>
     </div>
   );
@@ -146,14 +146,14 @@ function JadwalTab() {
     setTimeout(() => setStatus(""), 2500);
   };
 
-  if (!loaded) return <p className="text-xs text-slate-600">Memuat...</p>;
+  if (!loaded) return <p className="text-xs text-ink-faint">Memuat...</p>;
 
   return (
     <div className="space-y-4">
       <div className="flex gap-2 flex-wrap">
         {DAYS.map((d) => (
           <button key={d} onClick={() => setDay(d)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${day === d ? "bg-blue-600 border-blue-500 text-white" : "glass border-white/8 text-slate-400"}`}>
+            className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${day === d ? "bg-sage border-sage text-ink" : "glass border-ink/15 text-ink-soft"}`}>
             {d}
           </button>
         ))}
@@ -161,20 +161,20 @@ function JadwalTab() {
 
       <div className="space-y-2">
         {items.map((it, i) => (
-          <div key={i} className="grid grid-cols-12 gap-2 items-center bg-white/3 rounded-xl p-2">
+          <div key={i} className="grid grid-cols-12 gap-2 items-center bg-black/[0.03] rounded-xl p-2">
             <input className={`${inputCls} col-span-3`} placeholder="Jam" value={it.jam} onChange={(e) => updateItem(i, "jam", e.target.value)} />
             <input className={`${inputCls} col-span-4`} placeholder="Mata Pelajaran" value={it.mapel} onChange={(e) => updateItem(i, "mapel", e.target.value)} />
             <input className={`${inputCls} col-span-2`} placeholder="Guru" value={it.guru} onChange={(e) => updateItem(i, "guru", e.target.value)} />
             <input className={`${inputCls} col-span-2`} placeholder="Ruang" value={it.ruang} onChange={(e) => updateItem(i, "ruang", e.target.value)} />
-            <button onClick={() => removeRow(i)} className="col-span-1 text-red-400 hover:text-red-300 flex justify-center"><Trash2 size={14} /></button>
+            <button onClick={() => removeRow(i)} className="col-span-1 text-red-600 hover:text-red-700 flex justify-center"><Trash2 size={14} /></button>
           </div>
         ))}
       </div>
 
       <div className="flex items-center gap-3">
-        <button onClick={addRow} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold glass border border-white/8 text-slate-300 hover:text-white"><Plus size={14} />Tambah Jam</button>
+        <button onClick={addRow} className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold glass border border-ink/15 text-ink-soft hover:text-ink"><Plus size={14} />Tambah Jam</button>
         <button onClick={save} className={btnPrimary}><Save size={14} />Simpan {day}</button>
-        {status && <span className="text-xs text-slate-400">{status}</span>}
+        {status && <span className="text-xs text-ink-soft">{status}</span>}
       </div>
     </div>
   );
@@ -215,29 +215,29 @@ function PiketTab() {
     setTimeout(() => setStatus(""), 2500);
   };
 
-  if (!loaded) return <p className="text-xs text-slate-600">Memuat...</p>;
+  if (!loaded) return <p className="text-xs text-ink-faint">Memuat...</p>;
 
   return (
     <div className="space-y-4">
       <div className="flex gap-2 flex-wrap">
         {DAYS.map((d) => (
           <button key={d} onClick={() => setDay(d)}
-            className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${day === d ? "bg-blue-600 border-blue-500 text-white" : "glass border-white/8 text-slate-400"}`}>
+            className={`px-4 py-2 rounded-xl text-xs font-semibold border transition-all ${day === d ? "bg-sage border-sage text-ink" : "glass border-ink/15 text-ink-soft"}`}>
             {d}
           </button>
         ))}
       </div>
       <div>
-        <label className="text-xs text-slate-400 mb-1 block">Kelompok</label>
+        <label className="text-xs text-ink-soft mb-1 block">Kelompok</label>
         <input type="number" min={1} className={inputCls} value={kelompok} onChange={(e) => setKelompok(Number(e.target.value))} />
       </div>
       <div>
-        <label className="text-xs text-slate-400 mb-1 block">Anggota (pisahkan dengan koma)</label>
+        <label className="text-xs text-ink-soft mb-1 block">Anggota (pisahkan dengan koma)</label>
         <textarea className={`${inputCls} min-h-20`} value={anggotaText} onChange={(e) => setAnggotaText(e.target.value)} placeholder="Nama 1, Nama 2, Nama 3" />
       </div>
       <div className="flex items-center gap-3">
         <button onClick={save} className={btnPrimary}><Save size={14} />Simpan Piket {day}</button>
-        {status && <span className="text-xs text-slate-400">{status}</span>}
+        {status && <span className="text-xs text-ink-soft">{status}</span>}
       </div>
     </div>
   );
@@ -282,38 +282,38 @@ function NilaiTab() {
     }
   };
 
-  if (!loaded) return <p className="text-xs text-slate-600">Memuat...</p>;
+  if (!loaded) return <p className="text-xs text-ink-faint">Memuat...</p>;
 
   return (
     <div className="space-y-4">
       <div className="flex gap-2 flex-wrap items-end">
         <div className="flex-1 min-w-40">
-          <label className="text-xs text-slate-400 mb-1 block">Mata Pelajaran Baru</label>
+          <label className="text-xs text-ink-soft mb-1 block">Mata Pelajaran Baru</label>
           <input className={inputCls} value={newMapel} onChange={(e) => setNewMapel(e.target.value)} placeholder="Nama mapel" />
         </div>
         <div className="flex-1 min-w-40">
-          <label className="text-xs text-slate-400 mb-1 block">Guru</label>
+          <label className="text-xs text-ink-soft mb-1 block">Guru</label>
           <input className={inputCls} value={newGuru} onChange={(e) => setNewGuru(e.target.value)} placeholder="Nama guru" />
         </div>
         <button onClick={addMapel} className={btnPrimary}><Plus size={14} />Tambah</button>
       </div>
 
-      {status && <p className="text-xs text-slate-400">{status}</p>}
+      {status && <p className="text-xs text-ink-soft">{status}</p>}
 
       <div className="space-y-2">
         {grades.map((g) => (
-          <div key={g.mapel} className="grid grid-cols-12 gap-2 items-center bg-white/3 rounded-xl p-2">
-            <span className="col-span-2 text-xs font-semibold text-white truncate">{g.mapel}</span>
+          <div key={g.mapel} className="grid grid-cols-12 gap-2 items-center bg-black/[0.03] rounded-xl p-2">
+            <span className="col-span-2 text-xs font-semibold text-ink truncate">{g.mapel}</span>
             <input className={`${inputCls} col-span-2`} placeholder="Guru" value={g.guru} onChange={(e) => updateField(g.mapel, "guru", e.target.value)} />
             <input type="number" className={`${inputCls} col-span-1`} value={g.uh1} onChange={(e) => updateField(g.mapel, "uh1", e.target.value)} />
             <input type="number" className={`${inputCls} col-span-1`} value={g.uh2} onChange={(e) => updateField(g.mapel, "uh2", e.target.value)} />
             <input type="number" className={`${inputCls} col-span-1`} value={g.uts} onChange={(e) => updateField(g.mapel, "uts", e.target.value)} />
             <input type="number" className={`${inputCls} col-span-1`} value={g.uas} onChange={(e) => updateField(g.mapel, "uas", e.target.value)} />
-            <span className="col-span-2 text-xs text-slate-400 text-center">Rata: {g.rataRata}</span>
-            <button onClick={() => saveRow(g)} className="col-span-1 text-blue-400 hover:text-blue-300 flex justify-center"><Save size={14} /></button>
+            <span className="col-span-2 text-xs text-ink-soft text-center">Rata: {g.rataRata}</span>
+            <button onClick={() => saveRow(g)} className="col-span-1 text-sage hover:text-sage flex justify-center"><Save size={14} /></button>
           </div>
         ))}
-        {grades.length === 0 && <p className="text-xs text-slate-600">Belum ada data nilai.</p>}
+        {grades.length === 0 && <p className="text-xs text-ink-faint">Belum ada data nilai.</p>}
       </div>
     </div>
   );
@@ -344,11 +344,11 @@ function PengumumanTab() {
     try { await apiDelete(`/api/announcements?id=${id}`); load(); } catch { /* noop */ }
   };
 
-  if (!loaded) return <p className="text-xs text-slate-600">Memuat...</p>;
+  if (!loaded) return <p className="text-xs text-ink-faint">Memuat...</p>;
 
   return (
     <div className="space-y-4">
-      <div className="glass rounded-xl p-4 border border-white/5 space-y-3">
+      <div className="glass rounded-xl p-4 border border-ink/10 space-y-3">
         <input className={inputCls} placeholder="Judul" value={form.judul} onChange={(e) => setForm({ ...form, judul: e.target.value })} />
         <textarea className={`${inputCls} min-h-20`} placeholder="Isi pengumuman" value={form.isi} onChange={(e) => setForm({ ...form, isi: e.target.value })} />
         <div className="flex gap-2">
@@ -360,17 +360,17 @@ function PengumumanTab() {
           <input className={inputCls} placeholder="Dari (nama)" value={form.oleh} onChange={(e) => setForm({ ...form, oleh: e.target.value })} />
         </div>
         <button onClick={submit} className={btnPrimary}><Plus size={14} />Tambah Pengumuman</button>
-        {status && <p className="text-xs text-red-400">{status}</p>}
+        {status && <p className="text-xs text-red-600">{status}</p>}
       </div>
 
       <div className="space-y-2">
-        {list.length === 0 && <p className="text-xs text-slate-600">Belum ada pengumuman.</p>}
+        {list.length === 0 && <p className="text-xs text-ink-faint">Belum ada pengumuman.</p>}
         {list.map((p) => (
-          <div key={p.id} className="flex items-start justify-between gap-3 bg-white/3 rounded-xl p-3">
+          <div key={p.id} className="flex items-start justify-between gap-3 bg-black/[0.03] rounded-xl p-3">
             <div>
-              <p className="text-sm font-semibold text-white">{p.judul}</p>
-              <p className="text-xs text-slate-500 mt-0.5">{p.isi}</p>
-              <p className="text-xs text-slate-600 mt-1">{p.tanggal} &middot; {p.prioritas} &middot; {p.oleh}</p>
+              <p className="text-sm font-semibold text-ink">{p.judul}</p>
+              <p className="text-xs text-ink-faint mt-0.5">{p.isi}</p>
+              <p className="text-xs text-ink-faint mt-1">{p.tanggal} &middot; {p.prioritas} &middot; {p.oleh}</p>
             </div>
             <button onClick={() => remove(p.id)} className={btnDanger}><Trash2 size={12} />Hapus</button>
           </div>
@@ -401,11 +401,11 @@ function AgendaTab() {
     load();
   };
 
-  if (!loaded) return <p className="text-xs text-slate-600">Memuat...</p>;
+  if (!loaded) return <p className="text-xs text-ink-faint">Memuat...</p>;
 
   return (
     <div className="space-y-4">
-      <div className="glass rounded-xl p-4 border border-white/5 space-y-3">
+      <div className="glass rounded-xl p-4 border border-ink/10 space-y-3">
         <div className="flex gap-2 flex-wrap">
           <input type="date" className={inputCls} value={form.tanggal} onChange={(e) => setForm({ ...form, tanggal: e.target.value })} />
           <input className={`${inputCls} flex-1 min-w-40`} placeholder="Judul agenda" value={form.judul} onChange={(e) => setForm({ ...form, judul: e.target.value })} />
@@ -423,12 +423,12 @@ function AgendaTab() {
       </div>
 
       <div className="space-y-2">
-        {list.length === 0 && <p className="text-xs text-slate-600">Belum ada agenda.</p>}
+        {list.length === 0 && <p className="text-xs text-ink-faint">Belum ada agenda.</p>}
         {list.map((a) => (
-          <div key={a.id} className="flex items-center justify-between gap-3 bg-white/3 rounded-xl p-3">
+          <div key={a.id} className="flex items-center justify-between gap-3 bg-black/[0.03] rounded-xl p-3">
             <div>
-              <p className="text-sm font-semibold text-white">{a.judul}</p>
-              <p className="text-xs text-slate-500">{a.tanggal} &middot; {a.kategori}</p>
+              <p className="text-sm font-semibold text-ink">{a.judul}</p>
+              <p className="text-xs text-ink-faint">{a.tanggal} &middot; {a.kategori}</p>
             </div>
             <button onClick={() => remove(a.id)} className={btnDanger}><Trash2 size={12} />Hapus</button>
           </div>
@@ -476,7 +476,7 @@ function SiswaTab() {
     load();
   };
 
-  if (!loaded) return <p className="text-xs text-slate-600">Memuat...</p>;
+  if (!loaded) return <p className="text-xs text-ink-faint">Memuat...</p>;
 
   return (
     <div className="space-y-4">
@@ -484,11 +484,11 @@ function SiswaTab() {
         <input className={`${inputCls} flex-1`} placeholder="Nama siswa baru" value={newName} onChange={(e) => setNewName(e.target.value)} />
         <button onClick={addStudent} className={btnPrimary}><Plus size={14} />Tambah</button>
       </div>
-      {status && <p className="text-xs text-slate-400">{status}</p>}
+      {status && <p className="text-xs text-ink-soft">{status}</p>}
       <div className="space-y-2 max-h-[32rem] overflow-y-auto pr-1">
         {list.map((s) => (
-          <div key={s.id} className="grid grid-cols-12 gap-2 items-center bg-white/3 rounded-xl p-2">
-            <span className="col-span-3 text-xs font-semibold text-white truncate">{s.nama}</span>
+          <div key={s.id} className="grid grid-cols-12 gap-2 items-center bg-black/[0.03] rounded-xl p-2">
+            <span className="col-span-3 text-xs font-semibold text-ink truncate">{s.nama}</span>
             <input className={`${inputCls} col-span-2`} placeholder="NIS" value={s.nis} onChange={(e) => updateField(s.id, "nis", e.target.value)} />
             <select className={`${inputCls} col-span-2`} value={s.jenisKelamin} onChange={(e) => updateField(s.id, "jenisKelamin", e.target.value)}>
               <option value="">-</option>
@@ -496,11 +496,11 @@ function SiswaTab() {
               <option value="P">P</option>
             </select>
             <input className={`${inputCls} col-span-3`} placeholder="Jabatan" value={s.jabatan} onChange={(e) => updateField(s.id, "jabatan", e.target.value)} />
-            <button onClick={() => saveRow(s)} className="col-span-1 text-blue-400 hover:text-blue-300 flex justify-center"><Save size={14} /></button>
-            <button onClick={() => remove(s.id)} className="col-span-1 text-red-400 hover:text-red-300 flex justify-center"><Trash2 size={14} /></button>
+            <button onClick={() => saveRow(s)} className="col-span-1 text-sage hover:text-sage flex justify-center"><Save size={14} /></button>
+            <button onClick={() => remove(s.id)} className="col-span-1 text-red-600 hover:text-red-700 flex justify-center"><Trash2 size={14} /></button>
           </div>
         ))}
-        {list.length === 0 && <p className="text-xs text-slate-600">Belum ada data siswa.</p>}
+        {list.length === 0 && <p className="text-xs text-ink-faint">Belum ada data siswa.</p>}
       </div>
     </div>
   );
@@ -530,11 +530,11 @@ export default function Admin() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-black gradient-text">Admin Panel</h1>
-          <p className="text-slate-400 text-sm mt-1">Kelola data website Portal X-6</p>
+          <p className="text-ink-soft text-sm mt-1">Kelola data website Portal X-6</p>
         </div>
         <button
           onClick={() => { clearAdminKey(); setVerified(false); }}
-          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold glass border border-white/8 text-slate-300 hover:text-white transition-all">
+          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold glass border border-ink/15 text-ink-soft hover:text-ink transition-all">
           <LogOut size={14} />Keluar
         </button>
       </div>
@@ -542,13 +542,13 @@ export default function Admin() {
       <div className="flex gap-2 overflow-x-auto pb-1">
         {TABS.map((t) => (
           <button key={t.key} onClick={() => setActiveTab(t.key)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap border transition-all flex-shrink-0 ${activeTab === t.key ? "bg-blue-600 border-blue-500 text-white" : "glass border-white/8 text-slate-400 hover:text-white"}`}>
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap border transition-all flex-shrink-0 ${activeTab === t.key ? "bg-sage border-sage text-ink" : "glass border-ink/15 text-ink-soft hover:text-ink"}`}>
             {t.icon}{t.label}
           </button>
         ))}
       </div>
 
-      <div className="glass rounded-2xl p-5 border border-white/5">
+      <div className="glass rounded-2xl p-5 border border-ink/10">
         <ActiveComponent />
       </div>
     </div>

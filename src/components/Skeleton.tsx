@@ -1,10 +1,10 @@
 export function Skeleton({ className = "" }: { className?: string }) {
-  return <div className={`animate-pulse bg-white/5 rounded-xl ${className}`} />;
+  return <div className={`animate-pulse bg-black/[0.05] rounded-xl ${className}`} />;
 }
 
 export function SkeletonCard({ className = "" }: { className?: string }) {
   return (
-    <div className={`glass rounded-2xl p-4 border border-white/5 ${className}`}>
+    <div className={`glass rounded-2xl p-4 border border-ink/10 ${className}`}>
       <div className="flex items-start justify-between mb-3">
         <Skeleton className="w-9 h-9 rounded-xl" />
         <Skeleton className="w-14 h-3" />
@@ -18,7 +18,7 @@ export function SkeletonCard({ className = "" }: { className?: string }) {
 
 export function SkeletonBlock({ className = "" }: { className?: string }) {
   return (
-    <div className={`glass rounded-2xl p-5 border border-white/5 ${className}`}>
+    <div className={`glass rounded-2xl p-5 border border-ink/10 ${className}`}>
       <div className="flex items-center gap-2 mb-4">
         <Skeleton className="w-8 h-8 rounded-xl" />
         <Skeleton className="w-32 h-4" />
