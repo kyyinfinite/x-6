@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowRight, GraduationCap, Users, ChevronDown } from "lucide-react";
 import { kelasInfo, galeriKenangan } from "../DataDummy";
+import PortfolioSection from "../components/portfolio3d/PortfolioSection";
 
 export default function Portfolio() {
   return (
@@ -81,6 +82,11 @@ export default function Portfolio() {
           ))}
         </div>
       </section>
+
+      <PortfolioSection
+        title="Sorotan Kelas"
+        subtitle="Beberapa hal yang kami bangun dan kelola bersama sepanjang tahun ajaran ini."
+      />
 
       {/* ─── CTA PENUTUP ─── */}
       <section className="border-t border-border">
