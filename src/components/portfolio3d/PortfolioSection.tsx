@@ -57,6 +57,7 @@ export default function PortfolioSection({
 
   return (
     <section
+      id="galeri"
       ref={trackRef}
       className="relative w-full bg-paper"
       style={{ height: projects.length > 0 ? `${projects.length * VH_PER_PROJECT}vh` : "auto" }}
