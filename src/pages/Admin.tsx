@@ -3,6 +3,7 @@ import {
   ShieldCheck, LogOut, School, Calendar, ClipboardList, Award, Bell, CalendarDays, Users, Plus, Trash2, Save, Image as ImageIcon,
 } from "lucide-react";
 import { apiGet, apiPost, apiPut, apiDelete, isAdminVerified, verifyAdminKey, clearAdminKey } from "../lib/api";
+import { localPortfolioImages } from "../lib/portfolioImages";
 
 const inputCls = "w-full bg-black/[0.05] border border-ink/15 rounded-xl px-3 py-2 text-sm text-ink placeholder-ink focus:outline-none focus:border-sage/50 transition-all";
 const btnPrimary = "flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold bg-sage hover:bg-sage text-ink transition-all disabled:opacity-50";
@@ -507,6 +508,70 @@ function SiswaTab() {
   );
 }
 
+// ─────────────────────────── THUMBNAIL PICKER ───────────────────────────
+// Dua mode: "Galeri lokal" (dropdown dari src/assets/portfolio/, same-origin,
+// tidak pernah kena CORS) dan "URL manual" (untuk link eksternal lama/khusus).
+function ThumbnailPicker({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const isKnownLocal = localPortfolioImages.some((img) => img.url === value);
+  const [mode, setMode] = useState<"local" | "custom">(isKnownLocal || !value ? "local" : "custom");
+
+  return (
+    <div className="space-y-2">
+      <div className="flex gap-2 text-xs">
+        <button
+          type="button"
+          onClick={() => setMode("local")}
+          className={`px-3 py-1.5 rounded-lg border transition-all ${mode === "local" ? "bg-sage border-sage text-ink" : "glass border-ink/15 text-ink-soft"}`}
+        >
+          Galeri lokal
+        </button>
+        <button
+          type="button"
+          onClick={() => setMode("custom")}
+          className={`px-3 py-1.5 rounded-lg border transition-all ${mode === "custom" ? "bg-sage border-sage text-ink" : "glass border-ink/15 text-ink-soft"}`}
+        >
+          URL manual
+        </button>
+      </div>
+
+      {mode === "local" ? (
+        localPortfolioImages.length > 0 ? (
+          <select className={inputCls} value={value} onChange={(e) => onChange(e.target.value)}>
+            <option value="">-- Pilih gambar --</option>
+            {localPortfolioImages.map((img) => (
+              <option key={img.url} value={img.url}>
+                {img.label}
+              </option>
+            ))}
+          </select>
+        ) : (
+          <p className="text-xs text-amber-700">
+            Belum ada gambar di <code>src/assets/portfolio/</code>. Taruh file gambar di folder itu lalu deploy ulang.
+          </p>
+        )
+      ) : (
+        <input
+          className={inputCls}
+          placeholder="https://..."
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+        />
+      )}
+
+      {value && (
+        <img
+          src={value}
+          alt="Pratinjau"
+          className="h-28 w-full object-cover rounded-lg border border-ink/10"
+          onError={(e) => {
+            (e.target as HTMLImageElement).style.display = "none";
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
 // ─────────────────────────── PORTOFOLIO 3D ───────────────────────────
 function PortofolioTab() {
   const [list, setList] = useState<PortfolioItem[]>([]);
@@ -555,8 +620,9 @@ function PortofolioTab() {
   return (
     <div className="space-y-4">
       <p className="text-xs text-ink-faint">
-        Proyek di sini muncul sebagai bingkai foto 3D di halaman Portofolio. Gambar diisi lewat URL (bukan unggah file) —
-        pakai link gambar yang sudah kamu host (Vercel Blob, Imgur, dsb).
+        Proyek di sini muncul sebagai bingkai foto 3D di halaman Portofolio. Pakai <strong>Galeri lokal</strong> (gambar
+        yang sudah ditaruh di <code>src/assets/portfolio/</code>) supaya selalu ter-load tanpa masalah CORS — atau
+        <strong> URL manual</strong> kalau kamu tahu persis link itu direct-file dan mendukung CORS.
       </p>
 
       <div className="glass rounded-xl p-4 border border-ink/10 space-y-3">
@@ -566,16 +632,8 @@ function PortofolioTab() {
           <input className={`${inputCls} w-28`} type="number" placeholder="Urutan" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} />
         </div>
         <textarea className={`${inputCls} min-h-20`} placeholder="Deskripsi singkat" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
-        <input className={inputCls} placeholder="URL gambar/thumbnail" value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} />
+        <ThumbnailPicker value={form.thumbnail} onChange={(v) => setForm({ ...form, thumbnail: v })} />
         <input className={inputCls} placeholder="URL tautan proyek (opsional)" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} />
-        {form.thumbnail && (
-          <img
-            src={form.thumbnail}
-            alt="Pratinjau"
-            className="h-28 w-full object-cover rounded-lg border border-ink/10"
-            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
-          />
-        )}
         <button onClick={submit} className={btnPrimary}><Plus size={14} />Tambah Proyek</button>
         {formStatus && <p className="text-xs text-red-600">{formStatus}</p>}
       </div>
@@ -599,7 +657,7 @@ function PortofolioTab() {
                   <input className={`${inputCls} w-24`} type="number" value={p.order} onChange={(e) => updateField(p.id, "order", Number(e.target.value))} placeholder="Urutan" />
                 </div>
                 <textarea className={`${inputCls} min-h-16`} value={p.description} onChange={(e) => updateField(p.id, "description", e.target.value)} placeholder="Deskripsi" />
-                <input className={inputCls} value={p.thumbnail} onChange={(e) => updateField(p.id, "thumbnail", e.target.value)} placeholder="URL gambar" />
+                <ThumbnailPicker value={p.thumbnail} onChange={(v) => updateField(p.id, "thumbnail", v)} />
                 <input className={inputCls} value={p.link} onChange={(e) => updateField(p.id, "link", e.target.value)} placeholder="URL tautan" />
                 <div className="flex gap-2">
                   <button onClick={() => saveRow(p)} className={btnPrimary}><Save size={14} />Simpan</button>
