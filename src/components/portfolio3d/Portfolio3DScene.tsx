@@ -3,6 +3,7 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { AdaptiveDpr, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import Clouds from "./Clouds";
+import CinematicSky from "./CinematicSky";
 import PhotoFrame from "./PhotoFrame";
 import type { PortfolioProject } from "./types";
 
@@ -89,6 +90,7 @@ export default function Portfolio3DScene({ projects, progressRef, activeIndex }:
       <Environment preset="apartment" environmentIntensity={0.6} />
 
       <Clouds depth={depth} />
+      <CinematicSky depth={depth} />
 
       <Suspense fallback={null}>
         {projects.map((project, i) => (
