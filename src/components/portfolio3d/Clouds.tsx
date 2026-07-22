@@ -65,18 +65,10 @@ export default function Clouds({ depth, count = 16 }: CloudsProps) {
           }}
           position={[cloud.x, cloud.y, cloud.z]}
           scale={[cloud.scale * 2.4, cloud.scale, 1]}
-          // Sprite murah secara geometri; matikan frustum culling
-          // supaya tidak lenyap prematur saat posisi di-update tiap frame.
           frustumCulled={false}
           renderOrder={1}
         >
-          <spriteMaterial
-            map={texture}
-            transparent
-            opacity={0.45}
-            depthWrite={false}
-            fog={false}
-          />
+          <spriteMaterial map={texture} transparent opacity={0.45} depthWrite={false} fog={false} />
         </sprite>
       ))}
     </>

@@ -7,6 +7,8 @@ import PhotoFrame from "./PhotoFrame";
 import type { PortfolioProject } from "./types";
 
 export const SPACING = 4.2;
+// Margin aman supaya objek terjauh tidak pernah menyentuh far-plane
+// (akar penyebab blinking saat kamera bergerak).
 const CAMERA_FAR_MARGIN = 20;
 
 interface CameraRigProps {
@@ -16,7 +18,7 @@ interface CameraRigProps {
 
 function CameraRig({ projects, progressRef }: CameraRigProps) {
   const { camera } = useThree();
-  const currentLook = useRefVec3();
+  const currentLook = useMemo(() => new THREE.Vector3(), []);
 
   const { cameraCurve, lookCurve } = useMemo(() => {
     const camPoints: THREE.Vector3[] = [];
@@ -45,8 +47,7 @@ function CameraRig({ projects, progressRef }: CameraRigProps) {
     const targetPos = cameraCurve.getPointAt(t);
     const targetLook = lookCurve.getPointAt(t);
 
-    // Damping kamera & titik pandang -> gerak scroll terasa halus/cinematic
-    // (persis kesan smooth-scroll 3D di situs Lusion), bukan snap kaku.
+    // Damping -> gerak kamera halus/cinematic, bukan snap kaku tiap frame.
     camera.position.x = THREE.MathUtils.damp(camera.position.x, targetPos.x, 4, delta);
     camera.position.y = THREE.MathUtils.damp(camera.position.y, targetPos.y, 4, delta);
     camera.position.z = THREE.MathUtils.damp(camera.position.z, targetPos.z, 4, delta);
@@ -60,10 +61,6 @@ function CameraRig({ projects, progressRef }: CameraRigProps) {
   return null;
 }
 
-function useRefVec3() {
-  return useMemo(() => new THREE.Vector3(), []);
-}
-
 interface Portfolio3DSceneProps {
   projects: PortfolioProject[];
   progressRef: MutableRefObject<number>;
@@ -72,6 +69,8 @@ interface Portfolio3DSceneProps {
 
 export default function Portfolio3DScene({ projects, progressRef, activeIndex }: Portfolio3DSceneProps) {
   const depth = SPACING * projects.length + 8;
+  // Far-plane kamera mengikuti kedalaman scene + margin, bukan angka statis
+  // -> objek jauh tidak lagi terpotong/blink.
   const cameraFar = depth + CAMERA_FAR_MARGIN;
   const fogFar = Math.max(depth, cameraFar - 5);
 
@@ -85,9 +84,8 @@ export default function Portfolio3DScene({ projects, progressRef, activeIndex }:
       <fog attach="fog" args={["#FAF6EE", 4, fogFar]} />
 
       <ambientLight intensity={0.6} />
-      <directionalLight position={[3, 4, 5]} intensity={1} castShadow={false} />
+      <directionalLight position={[3, 4, 5]} intensity={1} />
       <hemisphereLight args={["#FAF6EE", "#8a7a5c", 0.5]} />
-      {/* Environment map -> refleksi lembut di frame, kesan "premium product shot" ala oryzo.ai */}
       <Environment preset="apartment" environmentIntensity={0.6} />
 
       <Clouds depth={depth} />

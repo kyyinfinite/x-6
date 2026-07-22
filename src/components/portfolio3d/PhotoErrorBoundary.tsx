@@ -8,8 +8,8 @@ interface State {
   hasError: boolean;
 }
 
-// Menangkap error loading texture per-frame, supaya 1 URL rusak
-// tidak menjatuhkan seluruh Canvas (Clouds ikut hilang).
+// Menangkap error loading texture per-frame, supaya 1 gambar rusak
+// tidak menjatuhkan seluruh Canvas (Clouds ikut hilang seperti sebelumnya).
 export default class PhotoErrorBoundary extends Component<Props, State> {
   state: State = { hasError: false };
 
