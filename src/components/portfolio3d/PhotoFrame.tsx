@@ -26,7 +26,7 @@ function PhotoFrameInner({ project, position, rotationY, active }: PhotoFramePro
     <group ref={groupRef} position={position} rotation={[0, rotationY, 0]}>
       <mesh position={[0, 0, -0.035]}>
         <boxGeometry args={[1.9, 1.4, 0.07]} />
-        <meshStandardMaterial color={active ? "#caa353" : "#2b2620"} roughness={0.55} metalness={0.15} />
+        <meshStandardMaterial color={active ? "#A6772C" : "#2B2620"} roughness={0.55} metalness={0.1} />
       </mesh>
       <mesh>
         <planeGeometry args={[1.62, 1.12]} />

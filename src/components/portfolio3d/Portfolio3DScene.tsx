@@ -62,10 +62,10 @@ export default function Portfolio3DScene({ projects, progressRef, activeIndex }:
       gl={{ antialias: true, powerPreference: "high-performance", alpha: false }}
       camera={{ fov: 50, near: 0.1, far: 100 }}
     >
-      <color attach="background" args={["#0d0f10"]} />
-      <fog attach="fog" args={["#0d0f10", 4, depth]} />
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[3, 4, 5]} intensity={0.85} />
+      <color attach="background" args={["#FAF6EE"]} />
+      <fog attach="fog" args={["#FAF6EE", 4, depth]} />
+      <ambientLight intensity={0.75} />
+      <directionalLight position={[3, 4, 5]} intensity={0.7} />
 
       <Clouds depth={depth} />
 

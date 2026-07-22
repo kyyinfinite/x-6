@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import {
-  ShieldCheck, LogOut, School, Calendar, ClipboardList, Award, Bell, CalendarDays, Users, Plus, Trash2, Save,
+  ShieldCheck, LogOut, School, Calendar, ClipboardList, Award, Bell, CalendarDays, Users, Plus, Trash2, Save, Image as ImageIcon,
 } from "lucide-react";
 import { apiGet, apiPost, apiPut, apiDelete, isAdminVerified, verifyAdminKey, clearAdminKey } from "../lib/api";
 
@@ -16,6 +16,7 @@ type Grade = { mapel: string; guru: string; uh1: number; uh2: number; uts: numbe
 type Pengumuman = { id: string; judul: string; isi: string; tanggal: string; prioritas: string; oleh: string };
 type AgendaItem = { id: string; tanggal: string; judul: string; kategori: string; warna: string };
 type Siswa = { id: string; nis: string; nama: string; jenisKelamin: string; jabatan: string; foto: string; nilaiRata: number; status: string };
+type PortfolioItem = { id: string; title: string; tag: string; description: string; thumbnail: string; link: string; order: number };
 
 const DAYS = ["Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
 
@@ -506,6 +507,112 @@ function SiswaTab() {
   );
 }
 
+// ─────────────────────────── PORTOFOLIO 3D ───────────────────────────
+function PortofolioTab() {
+  const [list, setList] = useState<PortfolioItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const [form, setForm] = useState({ title: "", tag: "", description: "", thumbnail: "", link: "", order: 0 });
+  const [formStatus, setFormStatus] = useState("");
+  const [rowStatus, setRowStatus] = useState("");
+
+  const load = () => apiGet<PortfolioItem[]>("/api/class-info?resource=portfolio").then(setList).catch(() => {});
+  useEffect(() => { load().finally(() => setLoaded(true)); }, []);
+
+  const submit = async () => {
+    if (!form.title.trim()) return;
+    try {
+      await apiPost("/api/class-info?resource=portfolio", form);
+      setForm({ title: "", tag: "", description: "", thumbnail: "", link: "", order: 0 });
+      load();
+    } catch (err) {
+      setFormStatus(err instanceof Error ? err.message : "Gagal menambah proyek");
+      setTimeout(() => setFormStatus(""), 3000);
+    }
+  };
+
+  const updateField = (id: string, field: keyof PortfolioItem, value: string | number) => {
+    setList((prev) => prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)));
+  };
+
+  const saveRow = async (p: PortfolioItem) => {
+    setRowStatus(`Menyimpan ${p.title}...`);
+    try {
+      await apiPut("/api/class-info?resource=portfolio", p);
+      setRowStatus("Tersimpan ✓");
+    } catch (err) {
+      setRowStatus(err instanceof Error ? err.message : "Gagal menyimpan");
+    }
+    setTimeout(() => setRowStatus(""), 2500);
+  };
+
+  const remove = async (id: string) => {
+    if (!window.confirm("Hapus proyek ini dari portofolio 3D?")) return;
+    try { await apiDelete(`/api/class-info?resource=portfolio&id=${id}`); load(); } catch { /* noop */ }
+  };
+
+  if (!loaded) return <p className="text-xs text-ink-faint">Memuat...</p>;
+
+  return (
+    <div className="space-y-4">
+      <p className="text-xs text-ink-faint">
+        Proyek di sini muncul sebagai bingkai foto 3D di halaman Portofolio. Gambar diisi lewat URL (bukan unggah file) —
+        pakai link gambar yang sudah kamu host (Vercel Blob, Imgur, dsb).
+      </p>
+
+      <div className="glass rounded-xl p-4 border border-ink/10 space-y-3">
+        <input className={inputCls} placeholder="Judul proyek" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
+        <div className="flex gap-2">
+          <input className={`${inputCls} flex-1`} placeholder="Tag (mis. React · Vite · Vercel)" value={form.tag} onChange={(e) => setForm({ ...form, tag: e.target.value })} />
+          <input className={`${inputCls} w-28`} type="number" placeholder="Urutan" value={form.order} onChange={(e) => setForm({ ...form, order: Number(e.target.value) })} />
+        </div>
+        <textarea className={`${inputCls} min-h-20`} placeholder="Deskripsi singkat" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+        <input className={inputCls} placeholder="URL gambar/thumbnail" value={form.thumbnail} onChange={(e) => setForm({ ...form, thumbnail: e.target.value })} />
+        <input className={inputCls} placeholder="URL tautan proyek (opsional)" value={form.link} onChange={(e) => setForm({ ...form, link: e.target.value })} />
+        {form.thumbnail && (
+          <img
+            src={form.thumbnail}
+            alt="Pratinjau"
+            className="h-28 w-full object-cover rounded-lg border border-ink/10"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+          />
+        )}
+        <button onClick={submit} className={btnPrimary}><Plus size={14} />Tambah Proyek</button>
+        {formStatus && <p className="text-xs text-red-600">{formStatus}</p>}
+      </div>
+
+      {rowStatus && <p className="text-xs text-ink-soft">{rowStatus}</p>}
+
+      <div className="space-y-3">
+        {list.length === 0 && <p className="text-xs text-ink-faint">Belum ada proyek.</p>}
+        {list
+          .slice()
+          .sort((a, b) => a.order - b.order)
+          .map((p) => (
+            <div key={p.id} className="flex items-start gap-3 bg-black/[0.03] rounded-xl p-3">
+              {p.thumbnail && (
+                <img src={p.thumbnail} alt={p.title} className="w-16 h-16 object-cover rounded-lg flex-shrink-0 border border-ink/10" />
+              )}
+              <div className="flex-1 space-y-2">
+                <input className={inputCls} value={p.title} onChange={(e) => updateField(p.id, "title", e.target.value)} placeholder="Judul" />
+                <div className="flex gap-2">
+                  <input className={`${inputCls} flex-1`} value={p.tag} onChange={(e) => updateField(p.id, "tag", e.target.value)} placeholder="Tag" />
+                  <input className={`${inputCls} w-24`} type="number" value={p.order} onChange={(e) => updateField(p.id, "order", Number(e.target.value))} placeholder="Urutan" />
+                </div>
+                <textarea className={`${inputCls} min-h-16`} value={p.description} onChange={(e) => updateField(p.id, "description", e.target.value)} placeholder="Deskripsi" />
+                <input className={inputCls} value={p.thumbnail} onChange={(e) => updateField(p.id, "thumbnail", e.target.value)} placeholder="URL gambar" />
+                <input className={inputCls} value={p.link} onChange={(e) => updateField(p.id, "link", e.target.value)} placeholder="URL tautan" />
+                <div className="flex gap-2">
+                  <button onClick={() => saveRow(p)} className={btnPrimary}><Save size={14} />Simpan</button>
+                  <button onClick={() => remove(p.id)} className={btnDanger}><Trash2 size={12} />Hapus</button>
+                </div>
+              </div>
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+}
+
 // ─────────────────────────── MAIN ───────────────────────────
 const TABS = [
   { key: "info", label: "Info Kelas", icon: <School size={16} />, Component: InfoKelasTab },
@@ -515,6 +622,7 @@ const TABS = [
   { key: "pengumuman", label: "Pengumuman", icon: <Bell size={16} />, Component: PengumumanTab },
   { key: "agenda", label: "Agenda", icon: <CalendarDays size={16} />, Component: AgendaTab },
   { key: "siswa", label: "Siswa & Struktur", icon: <Users size={16} />, Component: SiswaTab },
+  { key: "portofolio", label: "Portofolio 3D", icon: <ImageIcon size={16} />, Component: PortofolioTab },
 ] as const;
 
 export default function Admin() {

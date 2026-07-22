@@ -61,20 +61,20 @@ export default function PortfolioSection({
     <ReactLenis root options={{ lerp: 0.1, wheelMultiplier: 1, syncTouch: false }}>
       <section
         ref={trackRef}
-        className="relative w-full bg-[#0d0f10]"
+        className="relative w-full bg-paper"
         style={{ height: projects.length > 0 ? `${projects.length * VH_PER_PROJECT}vh` : "auto" }}
       >
         <div className="sticky top-0 h-screen w-full overflow-hidden">
           {isLoading && <Skeleton className="w-full h-full" />}
 
           {!isLoading && !overrideProjects && error && (
-            <div className="absolute inset-0 flex items-center justify-center text-amber-300 text-sm px-6 text-center">
+            <div className="absolute inset-0 flex items-center justify-center text-amber-700 text-sm px-6 text-center">
               ⚠️ Gagal memuat data proyek dari server ({error}).
             </div>
           )}
 
           {!isLoading && !error && projects.length === 0 && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-white/70 px-6 text-center">
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-ink-soft px-6 text-center">
               <FolderOpen size={28} />
               <p className="text-sm">Belum ada proyek yang ditambahkan lewat panel admin.</p>
             </div>
@@ -95,20 +95,20 @@ export default function PortfolioSection({
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -24 }}
                       transition={{ duration: 0.4 }}
-                      className="max-w-sm rounded-2xl bg-black/30 backdrop-blur-md px-5 py-4"
+                      className="max-w-sm rounded-2xl bg-surface/80 backdrop-blur-md border border-border px-5 py-4 shadow-lg"
                     >
                       <p className="text-[11px] uppercase tracking-widest text-gold font-mono">
                         {activeIndex + 1} / {projects.length}
                       </p>
-                      <h3 className="font-display text-2xl text-white mt-1.5">{activeProject.title}</h3>
-                      <p className="text-xs text-white/60 mt-1 font-mono">{activeProject.tag}</p>
-                      <p className="text-sm text-white/80 leading-relaxed mt-3">{activeProject.description}</p>
+                      <h3 className="font-display text-2xl text-ink mt-1.5">{activeProject.title}</h3>
+                      <p className="text-xs text-ink-faint mt-1 font-mono">{activeProject.tag}</p>
+                      <p className="text-sm text-ink-soft leading-relaxed mt-3">{activeProject.description}</p>
                       {activeProject.link && (
                         <a
                           href={activeProject.link}
                           target="_blank"
                           rel="noreferrer"
-                          className="pointer-events-auto inline-flex items-center gap-1.5 mt-4 text-xs font-semibold text-white hover:text-gold transition-colors"
+                          className="pointer-events-auto inline-flex items-center gap-1.5 mt-4 text-xs font-semibold text-ink hover:text-gold transition-colors"
                         >
                           Lihat proyek
                           <ArrowUpRight size={13} />
@@ -120,8 +120,8 @@ export default function PortfolioSection({
               </div>
 
               <div className="absolute top-6 left-1/2 -translate-x-1/2 text-center pointer-events-none px-6">
-                <p className="text-[10px] uppercase tracking-[0.3em] text-white/50 font-mono">{title}</p>
-                <p className="text-white/30 text-[11px] mt-1 max-w-xs mx-auto hidden md:block">{subtitle}</p>
+                <p className="text-[10px] uppercase tracking-[0.3em] text-gold font-semibold font-mono">{title}</p>
+                <p className="text-ink-faint text-[11px] mt-1 max-w-xs mx-auto hidden md:block">{subtitle}</p>
               </div>
             </>
           )}
