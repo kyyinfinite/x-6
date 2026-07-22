@@ -1,14 +1,12 @@
 import { Suspense, useMemo, type MutableRefObject } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { AdaptiveDpr } from "@react-three/drei";
+import { AdaptiveDpr, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import Clouds from "./Clouds";
 import PhotoFrame from "./PhotoFrame";
 import type { PortfolioProject } from "./types";
 
 export const SPACING = 4.2;
-// Margin aman supaya objek di ujung scene (terjauh dari kamera) tidak
-// pernah menyentuh far-plane -> ini akar penyebab blinking/culling prematur.
 const CAMERA_FAR_MARGIN = 20;
 
 interface CameraRigProps {
@@ -18,6 +16,7 @@ interface CameraRigProps {
 
 function CameraRig({ projects, progressRef }: CameraRigProps) {
   const { camera } = useThree();
+  const currentLook = useRefVec3();
 
   const { cameraCurve, lookCurve } = useMemo(() => {
     const camPoints: THREE.Vector3[] = [];
@@ -41,13 +40,28 @@ function CameraRig({ projects, progressRef }: CameraRigProps) {
     };
   }, [projects]);
 
-  useFrame(() => {
+  useFrame((_, delta) => {
     const t = THREE.MathUtils.clamp(progressRef.current, 0, 1);
-    camera.position.copy(cameraCurve.getPointAt(t));
-    camera.lookAt(lookCurve.getPointAt(t));
+    const targetPos = cameraCurve.getPointAt(t);
+    const targetLook = lookCurve.getPointAt(t);
+
+    // Damping kamera & titik pandang -> gerak scroll terasa halus/cinematic
+    // (persis kesan smooth-scroll 3D di situs Lusion), bukan snap kaku.
+    camera.position.x = THREE.MathUtils.damp(camera.position.x, targetPos.x, 4, delta);
+    camera.position.y = THREE.MathUtils.damp(camera.position.y, targetPos.y, 4, delta);
+    camera.position.z = THREE.MathUtils.damp(camera.position.z, targetPos.z, 4, delta);
+
+    currentLook.x = THREE.MathUtils.damp(currentLook.x, targetLook.x, 4, delta);
+    currentLook.y = THREE.MathUtils.damp(currentLook.y, targetLook.y, 4, delta);
+    currentLook.z = THREE.MathUtils.damp(currentLook.z, targetLook.z, 4, delta);
+    camera.lookAt(currentLook);
   });
 
   return null;
+}
+
+function useRefVec3() {
+  return useMemo(() => new THREE.Vector3(), []);
 }
 
 interface Portfolio3DSceneProps {
@@ -58,10 +72,8 @@ interface Portfolio3DSceneProps {
 
 export default function Portfolio3DScene({ projects, progressRef, activeIndex }: Portfolio3DSceneProps) {
   const depth = SPACING * projects.length + 8;
-  // Far-plane kamera kini mengikuti kedalaman scene + margin,
-  // bukan angka statis 100 -> mencegah objek jauh terpotong/blink.
   const cameraFar = depth + CAMERA_FAR_MARGIN;
-  const fogFar = Math.max(depth, cameraFar - 5); // fog tetap di dalam jangkauan camera far
+  const fogFar = Math.max(depth, cameraFar - 5);
 
   return (
     <Canvas
@@ -72,11 +84,11 @@ export default function Portfolio3DScene({ projects, progressRef, activeIndex }:
       <color attach="background" args={["#FAF6EE"]} />
       <fog attach="fog" args={["#FAF6EE", 4, fogFar]} />
 
-      {/* Pencahayaan: ambient + directional + hemisphere agar sisi objek
-          yang membelakangi directional light tidak gelap total/terlihat hilang */}
-      <ambientLight intensity={0.75} />
-      <directionalLight position={[3, 4, 5]} intensity={0.9} />
+      <ambientLight intensity={0.6} />
+      <directionalLight position={[3, 4, 5]} intensity={1} castShadow={false} />
       <hemisphereLight args={["#FAF6EE", "#8a7a5c", 0.5]} />
+      {/* Environment map -> refleksi lembut di frame, kesan "premium product shot" ala oryzo.ai */}
+      <Environment preset="apartment" environmentIntensity={0.6} />
 
       <Clouds depth={depth} />
 
