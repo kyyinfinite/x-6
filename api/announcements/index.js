@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         id: d._id.toString(),
         judul: d.judul,
         isi: d.isi,
-        tanggal: new Date(d.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' }),
+        tanggal: new Date(d.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
         prioritas: d.prioritas,
         oleh: d.oleh,
       }))

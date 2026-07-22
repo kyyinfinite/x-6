@@ -73,7 +73,7 @@ export default async function handler(req, res) {
       .reverse()
       .map(t => ({
         id: t._id.toString(),
-        tanggal: new Date(t.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Jakarta' }),
+        tanggal: new Date(t.createdAt).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }),
         keterangan: t.description || (t.type === 'kas_masuk' ? `Iuran kas — ${t.studentName}` : ''),
         jenis: t.type === 'pengeluaran' ? 'Keluar' : 'Masuk',
         jumlah: t.amount,
