@@ -7,6 +7,9 @@ import PhotoFrame from "./PhotoFrame";
 import type { PortfolioProject } from "./types";
 
 export const SPACING = 4.2;
+// Margin aman supaya objek di ujung scene (terjauh dari kamera) tidak
+// pernah menyentuh far-plane -> ini akar penyebab blinking/culling prematur.
+const CAMERA_FAR_MARGIN = 20;
 
 interface CameraRigProps {
   projects: PortfolioProject[];
@@ -55,17 +58,25 @@ interface Portfolio3DSceneProps {
 
 export default function Portfolio3DScene({ projects, progressRef, activeIndex }: Portfolio3DSceneProps) {
   const depth = SPACING * projects.length + 8;
+  // Far-plane kamera kini mengikuti kedalaman scene + margin,
+  // bukan angka statis 100 -> mencegah objek jauh terpotong/blink.
+  const cameraFar = depth + CAMERA_FAR_MARGIN;
+  const fogFar = Math.max(depth, cameraFar - 5); // fog tetap di dalam jangkauan camera far
 
   return (
     <Canvas
       dpr={[1, 1.5]}
       gl={{ antialias: true, powerPreference: "high-performance", alpha: false }}
-      camera={{ fov: 50, near: 0.1, far: 100 }}
+      camera={{ fov: 50, near: 0.1, far: cameraFar, position: [0, 0.4, 3.2] }}
     >
       <color attach="background" args={["#FAF6EE"]} />
-      <fog attach="fog" args={["#FAF6EE", 4, depth]} />
+      <fog attach="fog" args={["#FAF6EE", 4, fogFar]} />
+
+      {/* Pencahayaan: ambient + directional + hemisphere agar sisi objek
+          yang membelakangi directional light tidak gelap total/terlihat hilang */}
       <ambientLight intensity={0.75} />
-      <directionalLight position={[3, 4, 5]} intensity={0.7} />
+      <directionalLight position={[3, 4, 5]} intensity={0.9} />
+      <hemisphereLight args={["#FAF6EE", "#8a7a5c", 0.5]} />
 
       <Clouds depth={depth} />
 
